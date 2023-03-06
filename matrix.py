@@ -79,11 +79,19 @@ class Matrix:
     __rsub__ = __sub__
 
     def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return Matrix(tuple(tuple(self.matrix[i][j] * other
-                                      for j in range(self.cols))
-                                for i in range(self.rows)))
-        raise ValueError("Invalid Matrix Product")
+        if isinstance(other, Matrix):
+            if self.cols != other.rows:
+                raise ValueError("Invalid Matrix Multiplication")
+            result = [[0.0] * other.cols for _ in range(self.rows)]
+            for i in range(self.rows):
+                for j in range(other.cols):
+                    for k in range(self.cols):
+                        result[i][j] += self.matrix[i][k] * other.matrix[k][j]
+            return Matrix(result)
+        elif isinstance(other, (int, float)):
+            return Matrix([[other * val for val in row] for row in self.matrix])
+        else:
+            return NotImplemented
 
     __rmul__ = __mul__
 
