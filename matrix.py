@@ -40,11 +40,24 @@ class Matrix:
                     self.submatrix(i, 0).determinant())
                    for i in range(self.rows))
 
+    def trace(self):
+        if not self.square:
+            raise ValueError("Non-Square Matrix")
+        return sum(self.matrix[i][i] for i in range(self.rows))
+
+    def transpose(self):
+        if not self.square:
+            raise ValueError("Non-Square Matrix")
+        if self.rows == 1:
+            return self.matrix[1][0]
+        return Matrix(tuple(tuple(self.matrix[j][i]
+                                  for j in range(self.rows))
+                            for i in range(self.cols)))
+
     def __add__(self, other):
         if not isinstance(other, Matrix):
             return self + Matrix.unit(self.cols, other)
-        if ((other.rows != self.rows) or
-                (other.cols != self.cols)):
+        if (other.rows != self.rows) or (other.cols != self.cols):
             raise ValueError("Invalid Matrix Sum")
         return Matrix(tuple(tuple(
             (self.matrix[i][j] + other.matrix[i][j])
@@ -52,6 +65,27 @@ class Matrix:
                             for i in range(self.rows)))
 
     __radd__ = __add__
+
+    def __sub__(self, other):
+        if not isinstance(other, Matrix):
+            return self - Matrix.unit(self.cols, other)
+        if (other.rows != self.rows) or (other.cols != self.cols):
+            raise ValueError("Invalid Matrix Subtraction")
+        return Matrix(tuple(tuple(
+            (self.matrix[i][j] - other.matrix[i][j])
+            for j in range(other.cols))
+                            for i in range(self.rows)))
+
+    __rsub__ = __sub__
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            return Matrix(tuple(tuple(self.matrix[i][j] * other
+                                      for j in range(self.cols))
+                                for i in range(self.rows)))
+        raise ValueError("Invalid Matrix Product")
+
+    __rmul__ = __mul__
 
     def __getitem__(self, key):
         return self.matrix[key]
