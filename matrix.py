@@ -1,12 +1,12 @@
 class Matrix:
-    "Generate and manipulate matrix objects"
+    # "Generate and manipulate matrix objects"
 
     def __init__(self, matrix):  # Object constructor
         self.rows = len(matrix)
-        if not (self.rows):
+        if not self.rows:
             raise ValueError("Invalid Matrix")
         self.cols = len(matrix[0])
-        if not (self.cols):
+        if not self.cols:
             raise ValueError("Invalid Matrix")
         self.matrix = tuple(tuple(map(float, row))
                             for row in matrix if (len(row) == self.cols))
@@ -23,7 +23,7 @@ class Matrix:
 
     @staticmethod
     def sign(row, col):
-        return (-1.0 if (int(row + col) % 2) else +1.0)
+        return -1.0 if (int(row + col) % 2) else +1.0
 
     def submatrix(self, row, col):
         return Matrix(tuple(tuple(self.matrix[i][j]
@@ -31,9 +31,9 @@ class Matrix:
                             for i in range(self.rows) if (i != row)))
 
     def determinant(self):
-        if not (self.square):
+        if not self.square:
             raise ValueError("Non-Square Matrix")
-        if (self.rows == 1):
+        if self.rows == 1:
             return self.matrix[0][0]
         return sum((Matrix.sign(i, 0) *
                     self.matrix[i][0] *
@@ -42,7 +42,7 @@ class Matrix:
 
     def __add__(self, other):
         if not isinstance(other, Matrix):
-            return (self + Matrix.unit(self.cols, other))
+            return self + Matrix.unit(self.cols, other)
         if ((other.rows != self.rows) or
                 (other.cols != self.cols)):
             raise ValueError("Invalid Matrix Sum")
