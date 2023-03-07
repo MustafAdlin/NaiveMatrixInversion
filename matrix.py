@@ -89,7 +89,7 @@ class Matrix:
     def __mul__(self, other):
         if isinstance(other, Matrix):
             if self.cols != other.rows:
-                raise ValueError("Invalid Matrix Multiplication")
+                raise ValueError("Invalid Matrix Product")
             result = [[0.0] * other.cols for _ in range(self.rows)]
             for i in range(self.rows):
                 for j in range(other.cols):
