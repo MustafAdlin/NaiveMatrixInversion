@@ -1,6 +1,6 @@
 class Matrix:
-    # "Generate and manipulate matrix objects"
 
+    # "Generate and manipulate matrix objects"
     def __init__(self, matrix):  # Object constructor
         self.rows = len(matrix)
         if not self.rows:
@@ -14,6 +14,7 @@ class Matrix:
             raise ValueError("Invalid Matrix")
         self.square = (self.cols == self.rows)
 
+    # returns a square Matrix with size n
     @staticmethod
     def unit(size, val=1.0):
         return Matrix(tuple(tuple(
@@ -25,11 +26,13 @@ class Matrix:
     def sign(row, col):
         return -1.0 if (int(row + col) % 2) else +1.0
 
+    # Returns a submatrix of the Matrix
     def submatrix(self, row, col):
         return Matrix(tuple(tuple(self.matrix[i][j]
                                   for j in range(self.cols) if (j != col))
                             for i in range(self.rows) if (i != row)))
 
+    # returns the determinant of the Matrix
     def determinant(self):
         if not self.square:
             raise ValueError("Non-Square Matrix")
@@ -40,11 +43,13 @@ class Matrix:
                     self.submatrix(i, 0).determinant())
                    for i in range(self.rows))
 
+    # returns the sum of the diagonal elements of the Matrix
     def trace(self):
         if not self.square:
             raise ValueError("Non-Square Matrix")
         return sum(self.matrix[i][i] for i in range(self.rows))
 
+    # returns a new Matrix that is the transpose of the current object
     def transpose(self):
         if not self.square:
             raise ValueError("Non-Square Matrix")
@@ -54,6 +59,7 @@ class Matrix:
                                   for j in range(self.rows))
                             for i in range(self.cols)))
 
+    # returns a new Matrix that is the sum of the current object
     def __add__(self, other):
         if not isinstance(other, Matrix):
             return self + Matrix.unit(self.cols, other)
@@ -66,6 +72,7 @@ class Matrix:
 
     __radd__ = __add__
 
+    # returns a new Matrix that is the difference between the current object
     def __sub__(self, other):
         if not isinstance(other, Matrix):
             return self - Matrix.unit(self.cols, other)
@@ -78,6 +85,7 @@ class Matrix:
 
     __rsub__ = __sub__
 
+    # returns a new Matrix that is the product of the current object
     def __mul__(self, other):
         if isinstance(other, Matrix):
             if self.cols != other.rows:
@@ -95,9 +103,28 @@ class Matrix:
 
     __rmul__ = __mul__
 
+    # returns the inverse of the Matrix using determinant
+    def inverse(self):
+        det = self.determinant()
+        if det == 0:
+            raise ValueError("Non-Invertible Matrix")
+        if self.rows == 1:
+            return Matrix([[1.0 / self.matrix[0][0]]])
+        sign_matrix = Matrix(tuple(tuple(
+            Matrix.sign(i, j) for j in range(self.cols))
+                            for i in range(self.rows)))
+        cofactor_matrix = Matrix(tuple(tuple(
+            sign_matrix[i][j] * self.submatrix(i, j).determinant()
+            for j in range(self.cols))
+                            for i in range(self.rows)))
+        adjugate_matrix = cofactor_matrix.transpose()
+        return (1.0 / det) * adjugate_matrix
+
+    # returns a row of the Matrix
     def __getitem__(self, key):
         return self.matrix[key]
 
+    # returns a string representation of the Matrix
     def __str__(self):
         return "\n".join(" ".join(format(val, "+9.2E")
                                   for val in row)
